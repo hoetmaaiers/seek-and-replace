@@ -10,20 +10,37 @@ export default class FindAndReplacer {
     replace() {
         console.log('replace', this.path);
 
-        this.readDirectory(this.path);
+        this.readDirectory(this.path)
+            .then(() => {
+                console.log('--- DONE READING ---');
+            });
     }
 
     readDirectory(dirPath) {
-        const contents = fs.readdirSync(dirPath);
+        return new Promise((resolve, reject) => {
+            console.log('READ_DIRECTORY', dirPath);
 
-        contents.forEach((contentItem) => {
-            if (_.includes(contentItem, '_OLLIE_NAME_')) {
+            const contents = fs.readdirSync(dirPath);
+
+            const promList = contents.map((contentItem) => {
                 const replacedString = _.replace(contentItem, '_OLLIE_NAME_', 'naampie');
                 const oldPath = path.join(dirPath, contentItem)
                 const newPath = path.join(dirPath, replacedString);
 
-                fs.renameSync(oldPath, newPath);
-            }
+                if (oldPath !== newPath) {
+                    fs.renameSync(oldPath, newPath);
+                }
+
+                const stats = fs.statSync(newPath);
+                if (stats.isDirectory()) {
+                    return this.readDirectory(newPath);
+                } else {
+                    return Promise.resolve();
+                }
+
+            });
+
+            Promise.all(promList).then(resolve);
         });
     }
 
