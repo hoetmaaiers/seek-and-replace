@@ -3,6 +3,15 @@ import should from 'should';
 import { execSync } from 'child_process';
 import FindAndReplacer from './../src/find-and-replace';
 
+const keyDefinitions = [
+    {
+        key: 'NAME',
+        replacement: 'naampie'
+    }, {
+        key: 'AUTHOR',
+        replacement: 'Lenny'
+    }
+];
 
 describe('FindAndReplacer', function () {
 
@@ -12,7 +21,7 @@ describe('FindAndReplacer', function () {
             '.tmp',
             '.tmp/test',
             '.tmp/test_OLLIE_NAME_',
-            '.tmp/test_OLLIE_NAME_/test_2_OLLIE_NAME_',
+            '.tmp/test_OLLIE_NAME_/test_2_OLLIE_AUTHOR_',
         ];
 
         const FILES = [
@@ -32,13 +41,8 @@ describe('FindAndReplacer', function () {
 
     describe('#replace', function () {
 
+
         it('should replace a directory variable part', function () {
-            const keyDefinitions = [
-                {
-                    key: 'NAME',
-                    replacement: 'naampie'
-                }
-            ];
 
             const replacer = new FindAndReplacer('.tmp', keyDefinitions);
             replacer.replace();
@@ -49,18 +53,12 @@ describe('FindAndReplacer', function () {
         });
 
         it('should replace a variable nested directory variable part', function () {
-            const keyDefinitions = [
-                {
-                    key: 'NAME',
-                    replacement: 'naampie'
-                }
-            ];
 
             const replacer = new FindAndReplacer('.tmp', keyDefinitions);
             replacer.replace();
 
             const dirContents = fs.readdirSync('.tmp/testnaampie');
-            dirContents[2].should.equal('test_2naampie');
+            dirContents[2].should.equal('test_2Lenny');
         })
     });
 

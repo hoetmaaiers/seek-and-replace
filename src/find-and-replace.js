@@ -5,52 +5,57 @@ import path from 'path';
 export default class FindAndReplacer {
     constructor(path, keyDefinitions) {
         this.path = path;
+        this.keyDefinitions = keyDefinitions;
     }
 
     replace() {
-        console.log('replace', this.path);
 
-        this.readDirectory(this.path)
+        this.renameDirectoriesAndFiles(this.path)
             .then(() => {
-                console.log('--- DONE READING ---');
+                // this.renameFileContents(this.path);
+            })
+            .catch((err) => {
+                console.log('ERROR catched', err);
             });
     }
 
-    readDirectory(dirPath) {
+    renameDirectoriesAndFiles(dirPath) {
         return new Promise((resolve, reject) => {
-            console.log('READ_DIRECTORY', dirPath);
 
-            const contents = fs.readdirSync(dirPath);
+            const keyDefinitionPromList = this.keyDefinitions.map((keyDefintion) => {
 
-            const promList = contents.map((contentItem) => {
-                const replacedString = _.replace(contentItem, '_OLLIE_NAME_', 'naampie');
-                const oldPath = path.join(dirPath, contentItem)
-                const newPath = path.join(dirPath, replacedString);
+                const contents = fs.readdirSync(dirPath);
 
-                if (oldPath !== newPath) {
-                    fs.renameSync(oldPath, newPath);
-                }
+                return new Promise((resolve, reject) => {
+                    const renamePromList = contents.map((contentItem) => {
+                        this.renamePathWithDefinition(dirPath, contentItem, keyDefintion);
+                    });
 
-                const stats = fs.statSync(newPath);
-                if (stats.isDirectory()) {
-                    return this.readDirectory(newPath);
-                } else {
-                    return Promise.resolve();
-                }
-
+                    Promise.all(renamePromList).then(resolve);
+                });
             });
 
-            Promise.all(promList).then(resolve);
+            Promise.all(keyDefinitionPromList).then(resolve);
+
+
         });
     }
 
-    
-    replaceDirectoryName() {
-    }
+    renamePathWithDefinition(dirPath, item, keyDefintion) {
+        const replacedString = _.replace(item, `_OLLIE_${keyDefintion.key}_`, keyDefintion.replacement);
+        const oldPath = path.join(dirPath, item)
+        const newPath = path.join(dirPath, replacedString);
 
-    replaceFileName() {
-    }
+        if (oldPath !== newPath) {
+            fs.renameSync(oldPath, newPath);
+        }
 
-    replaceContent() {
+        const stats = fs.statSync(newPath);
+        if (stats.isDirectory()) {
+            return this.renameDirectoriesAndFiles(newPath);
+        } else {
+            return Promise.resolve();
+        }
+
     }
 }
