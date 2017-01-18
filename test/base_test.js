@@ -118,6 +118,11 @@ describe('FindAndReplacer', function () {
             result.should.equal('point-of-sale');
         });
 
+        it('should replace a variable START_CASE', function () {
+            const result = FindAndReplacer.smartReplace('_OLLIE_NAME_START_CASE_', 'NAME', 'Point of Sale');
+            result.should.equal('Point Of Sale');
+        });
+
     })
 
     after(function () {
