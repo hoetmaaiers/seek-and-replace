@@ -96,11 +96,11 @@ export default class FindAndReplacer {
             return _.replace(string, `_OLLIE_${key}_WITHOUT_SPACES_`, transformedReplacement);
 
         } else if (_.includes(string, 'LOWER_CASE')) {
-            let transformedReplacement = replacement.toLowerCase();
+            let transformedReplacement = _.lowerCase(replacement);
             return _.replace(string, `_OLLIE_${key}_LOWER_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'UPPER_CASE')) {
-            let transformedReplacement = replacement.toUpperCase();
+            let transformedReplacement = _.upperCase(replacement);
             return _.replace(string, `_OLLIE_${key}_UPPER_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'SNAKE_CASE')) {
