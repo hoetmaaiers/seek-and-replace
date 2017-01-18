@@ -6,16 +6,16 @@ import FindAndReplacer from './../src/find-and-replace';
 const keyDefinitions = [
     {
         key: 'NAME',
-        replacement: 'naampie'
+        replacement: 'naampie',
     }, {
         key: 'AUTHOR',
-        replacement: 'Lenny'
-    }
+        replacement: 'Jimmy Joe',
+    },
 ];
 
 describe('FindAndReplacer', function () {
 
-    before(function () {
+    beforeEach(function () {
         // create dummy directories & files
         const DIRECTORIES = [
             '.tmp',
@@ -34,14 +34,11 @@ describe('FindAndReplacer', function () {
         FILES.forEach((file) => execSync(`touch ${file}`))
 
         const DUMMY_FILE_CONTENT = [
-            'Lorem ipsum dolor sit amet',
+            'Lorem ipsum dolor sit amet _OLLIE_AUTHOR_KEBAB_CASE_',
             'blabla, blieblie, _OLLIE_NAME_ boemboem',
-            'amet sit dolor ipsum lorem',
+            'amet sit _OLLIE_NAME_UPPER_CASE_ ipsum lorem',
         ] ;
         fs.writeFileSync(FILES[0], DUMMY_FILE_CONTENT.join('\n'));
-    });
-
-    beforeEach(function () {
     });
 
 
@@ -64,8 +61,8 @@ describe('FindAndReplacer', function () {
             replacer.replace();
 
             const dirContents = fs.readdirSync('.tmp/testnaampie');
-            dirContents[2].should.equal('test_2Lenny');
-        })
+            dirContents[2].should.equal('test_2Jimmy Joe');
+        });
 
         it('should replace a files content variable part', function () {
             const replacer = new FindAndReplacer('.tmp', keyDefinitions);
@@ -73,8 +70,10 @@ describe('FindAndReplacer', function () {
 
             const fileContents = fs.readFileSync('.tmp/test/foo.txt', { encoding: 'utf8'});
             const fileContentsArray = fileContents.split('\n');
+            fileContentsArray[0].should.equal('Lorem ipsum dolor sit amet jimmy-joe');
             fileContentsArray[1].should.equal('blabla, blieblie, naampie boemboem');
-        })
+            fileContentsArray[2].should.equal('amet sit NAAMPIE ipsum lorem');
+        });
     });
 
     describe('#smartReplace', function () {
@@ -125,7 +124,7 @@ describe('FindAndReplacer', function () {
 
     })
 
-    after(function () {
+    afterEach(function () {
         // clean up dummy directories & files
         execSync(`rm -rf .tmp`);
     });
