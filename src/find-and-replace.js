@@ -103,6 +103,10 @@ export default class FindAndReplacer {
             let transformedReplacement = replacement.toUpperCase();
             return _.replace(string, `_OLLIE_${key}_UPPER_CASE_`, transformedReplacement);
 
+        } else if (_.includes(string, 'SNAKE_CASE')) {
+            let transformedReplacement = _.snakeCase(replacement);
+            return _.replace(string, `_OLLIE_${key}_SNAKE_CASE_`, transformedReplacement);
+
         } else {
             return _.replace(string, `_OLLIE_${key}_`, replacement);
         }

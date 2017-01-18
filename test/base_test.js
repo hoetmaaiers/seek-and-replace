@@ -103,6 +103,11 @@ describe('FindAndReplacer', function () {
             result.should.equal('POINT OF SALE');
         });
 
+        it('should replace a variable SNAKE_CASE', function () {
+            const result = FindAndReplacer.smartReplace('_OLLIE_NAME_SNAKE_CASE_', 'NAME', 'Point of Sale');
+            result.should.equal('point_of_sale');
+        });
+
     })
 
     after(function () {
