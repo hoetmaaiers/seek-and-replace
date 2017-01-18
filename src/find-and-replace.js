@@ -111,6 +111,10 @@ export default class FindAndReplacer {
             let transformedReplacement = _.camelCase(replacement);
             return _.replace(string, `_OLLIE_${key}_CAMEL_CASE_`, transformedReplacement);
 
+        } else if (_.includes(string, 'KEBAB_CASE')) {
+            let transformedReplacement = _.kebabCase(replacement);
+            return _.replace(string, `_OLLIE_${key}_KEBAB_CASE_`, transformedReplacement);
+
         } else {
             return _.replace(string, `_OLLIE_${key}_`, replacement);
         }
