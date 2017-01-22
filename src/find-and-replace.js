@@ -11,7 +11,6 @@ export default class FindAndReplacer {
     replace() {
 
         this.renameDirectoriesAndFiles(this.path)
-            .then(this.renameFileContents.bind(this, this.path))
             .catch((err) => {
                 console.log('ERROR catched', err);
             });
@@ -51,7 +50,7 @@ export default class FindAndReplacer {
         const stats = fs.statSync(newPath);
         if (stats.isDirectory()) {
             return this.renameDirectoriesAndFiles(newPath);
-        } else if (stats.isFile) {
+        } else if (stats.isFile()) {
             return this.renameFileContents(newPath);
         } else {
             return Promise.resolve();
@@ -68,7 +67,7 @@ export default class FindAndReplacer {
     }
 
     renameFileWithDefinition(filePath, keyDefinition) {
-        const fileContents = fs.readFileSync('.tmp/test/foo.txt', { encoding: 'utf8' });
+        const fileContents = fs.readFileSync(filePath, { encoding: 'utf8' });
         const replacedFileContents = FindAndReplacer.smartReplace(fileContents, keyDefinition.key, keyDefinition.replacement);
 
         if (fileContents !== replacedFileContents) {
