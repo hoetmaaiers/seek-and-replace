@@ -3,9 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 export default class FindAndReplacer {
-    constructor(namespace = '', replacerPath, keyDefinitions) {
+    constructor(namespace = '', replacePath, keyDefinitions) {
         this.namespace = namespace;
-        this.path = replacerPath;
+        this.path = replacePath;
         this.keyDefinitions = keyDefinitions;
     }
 

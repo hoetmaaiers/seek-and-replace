@@ -11,6 +11,7 @@ We create a FindAndReplace instance by providing two paramters:
 - keyDefinitions: which are `{ key, replacement }` objects defining what key to search for and with which value to replace it with
 
 ```javascript
+const namespace = 'OLLIE';
 const replacePath = './src';
 
 const keyDefinitions = [
@@ -23,7 +24,7 @@ const keyDefinitions = [
     },
 ];
 
-const replacer = new FindAndReplacer(replacePath, keyDefinitions);
+const replacer = new FindAndReplacer(namespace, replacePath, keyDefinitions);
 ```
 
 
@@ -38,7 +39,7 @@ A FindAndReplace instance has 1 key functionality: **replace**! When calling  `i
 FindAndReplace exposes a static method `smartReplace` which is used by the FindAndReplace instance but can also be used outside separately.
 
 ```javascript
-FindAndReplace.smartReplace(string, key, replacement)
+FindAndReplace.smartReplace(namespace, string, key, replacement)
 ```
 
 
