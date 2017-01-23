@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import fs from 'fs';
-import path from 'path';
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
 
-export default class SeekdAndReplace{
+class SeekdAndReplace {
     constructor(namespace = '', replacePath, keyDefinitions) {
         this.namespace = namespace;
         this.path = replacePath;
@@ -10,18 +10,12 @@ export default class SeekdAndReplace{
     }
 
     replace() {
-
-        this.renameDirectoriesAndFiles(this.path)
-            .catch((err) => {
-                console.log('ERROR catched', err);
-            });
+        return this.renameDirectoriesAndFiles(this.path);
     }
 
     renameDirectoriesAndFiles(dirPath) {
         return new Promise((resolve, reject) => {
-
             const keyDefinitionPromList = this.keyDefinitions.map((keyDefinition) => {
-
                 const contents = fs.readdirSync(dirPath);
 
                 return new Promise((resolve, reject) => {
@@ -35,9 +29,9 @@ export default class SeekdAndReplace{
                 });
             });
 
-            Promise.all(keyDefinitionPromList).then(resolve);
-
-
+            Promise.all(keyDefinitionPromList)
+                .then(resolve)
+                .catch(reject);
         });
     }
 
@@ -54,7 +48,7 @@ export default class SeekdAndReplace{
         if (stats.isDirectory()) {
             return this.renameDirectoriesAndFiles(newPath);
         } else if (stats.isFile()) {
-            return this.renameFileContents(newPath);1
+            return this.renameFileContents(newPath);
         } else {
             return Promise.resolve();
         }
@@ -66,6 +60,10 @@ export default class SeekdAndReplace{
             const promList = this.keyDefinitions.map((keyDefinition) => {
                 this.renameFileWithDefinition(filePath, keyDefinition);
             });
+
+            Promise.all(promList)
+                .then(resolve)
+                .catch(reject);
         });
     }
 
@@ -127,3 +125,5 @@ export default class SeekdAndReplace{
         }
     }
 }
+
+module.exports = SeekdAndReplace
