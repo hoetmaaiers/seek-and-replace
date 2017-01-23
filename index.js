@@ -1,1 +1,1 @@
-module.exports = require('./src/find-and-replace');
+module.exports = require('./src/seek-and-replace');

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import should from 'should';
 import { execSync } from 'child_process';
-import FindAndReplacer from './../src/find-and-replace';
+import SeekAndReplace from './../src/seek-and-replace';
 
 const keyDefinitions = [
     {
@@ -13,7 +13,7 @@ const keyDefinitions = [
     },
 ];
 
-describe('FindAndReplacer', function () {
+describe('SeekAndReplace', function () {
 
     beforeEach(function () {
         // create dummy directories & files
@@ -47,7 +47,7 @@ describe('FindAndReplacer', function () {
 
         it('should replace a directory variable part', function () {
 
-            const replacer = new FindAndReplacer('OLLIE', '.tmp', keyDefinitions);
+            const replacer = new SeekAndReplace('OLLIE', '.tmp', keyDefinitions);
             replacer.replace();
 
             const dirContents = fs.readdirSync('.tmp');
@@ -57,7 +57,7 @@ describe('FindAndReplacer', function () {
 
         it('should replace a variable nested directory variable part', function () {
 
-            const replacer = new FindAndReplacer('OLLIE', '.tmp', keyDefinitions);
+            const replacer = new SeekAndReplace('OLLIE', '.tmp', keyDefinitions);
             replacer.replace();
 
             const dirContents = fs.readdirSync('.tmp/testnaampie');
@@ -65,7 +65,7 @@ describe('FindAndReplacer', function () {
         });
 
         it('should replace a files content variable part', function () {
-            const replacer = new FindAndReplacer('OLLIE', '.tmp', keyDefinitions);
+            const replacer = new SeekAndReplace('OLLIE', '.tmp', keyDefinitions);
             replacer.replace();
 
             const fileContents = fs.readFileSync('.tmp/test/foo.txt', { encoding: 'utf8'});
@@ -78,47 +78,47 @@ describe('FindAndReplacer', function () {
 
     describe('#smartReplace', function () {
         it('should replace a variable', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', 'abc _OLLIE_NAME_', 'NAME', 'BLAblaBLA');
+            const result = SeekAndReplace.smartReplace('OLLIE', 'abc _OLLIE_NAME_', 'NAME', 'BLAblaBLA');
             result.should.equal('abc BLAblaBLA');
         });
 
         it('should replace a variable AS DOMAIN', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_AS_DOMAIN_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_AS_DOMAIN_', 'NAME', 'Point of Sale');
             result.should.equal('pointofsale');
         });
 
         it('should replace a variable WITHOUT_SPACES', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_WITHOUT_SPACES_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_WITHOUT_SPACES_', 'NAME', 'Point of Sale');
             result.should.equal('PointofSale');
         });
 
         it('should replace a variable LOWER_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_LOWER_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_LOWER_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('point of sale');
         });
 
         it('should replace a variable UPPER_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_UPPER_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_UPPER_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('POINT OF SALE');
         });
 
         it('should replace a variable SNAKE_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_SNAKE_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_SNAKE_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('point_of_sale');
         });
 
         it('should replace a variable CAMEL_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_CAMEL_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_CAMEL_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('pointOfSale');
         });
 
         it('should replace a variable KEBAB_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_KEBAB_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_KEBAB_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('point-of-sale');
         });
 
         it('should replace a variable START_CASE', function () {
-            const result = FindAndReplacer.smartReplace('OLLIE', '_OLLIE_NAME_START_CASE_', 'NAME', 'Point of Sale');
+            const result = SeekAndReplace.smartReplace('OLLIE', '_OLLIE_NAME_START_CASE_', 'NAME', 'Point of Sale');
             result.should.equal('Point Of Sale');
         });
 

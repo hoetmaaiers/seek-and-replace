@@ -2,7 +2,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 
-export default class FindAndReplacer {
+export default class SeekdAndReplace{
     constructor(namespace = '', replacePath, keyDefinitions) {
         this.namespace = namespace;
         this.path = replacePath;
@@ -42,7 +42,7 @@ export default class FindAndReplacer {
     }
 
     renamePathWithDefinition(dirPath, item, keyDefinition) {
-        const replacedString = FindAndReplacer.smartReplace(this.namespace, item, keyDefinition.key, keyDefinition.replacement);
+        const replacedString = SeekdAndReplace.smartReplace(this.namespace, item, keyDefinition.key, keyDefinition.replacement);
         const oldPath = path.join(dirPath, item);
         const newPath = path.join(dirPath, replacedString);
 
@@ -71,7 +71,7 @@ export default class FindAndReplacer {
 
     renameFileWithDefinition(filePath, keyDefinition) {
         const fileContents = fs.readFileSync(filePath, { encoding: 'utf8' });
-        const replacedFileContents = FindAndReplacer.smartReplace(this.namespace, fileContents, keyDefinition.key, keyDefinition.replacement);
+        const replacedFileContents = SeekdAndReplace.smartReplace(this.namespace, fileContents, keyDefinition.key, keyDefinition.replacement);
 
         if (fileContents !== replacedFileContents) {
             fs.writeFileSync(filePath, replacedFileContents);
