@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 export default class FindAndReplacer {
-    constructor(path, keyDefinitions) {
-        this.path = path;
+    constructor(namespace = '', replacerPath, keyDefinitions) {
+        this.namespace = namespace;
+        this.path = replacerPath;
         this.keyDefinitions = keyDefinitions;
     }
 
@@ -25,10 +26,12 @@ export default class FindAndReplacer {
 
                 return new Promise((resolve, reject) => {
                     const renamePromList = contents.map((contentItem) => {
-                        this.renamePathWithDefinition(dirPath, contentItem, keyDefinition);
+                        return this.renamePathWithDefinition(dirPath, contentItem, keyDefinition);
                     });
 
-                    Promise.all(renamePromList).then(resolve);
+                    Promise.all(renamePromList)
+                        .then(resolve)
+                        .catch(reject);
                 });
             });
 
@@ -39,8 +42,8 @@ export default class FindAndReplacer {
     }
 
     renamePathWithDefinition(dirPath, item, keyDefinition) {
-        const replacedString = FindAndReplacer.smartReplace(item, keyDefinition.key, keyDefinition.replacement);
-        const oldPath = path.join(dirPath, item)
+        const replacedString = FindAndReplacer.smartReplace(this.namespace, item, keyDefinition.key, keyDefinition.replacement);
+        const oldPath = path.join(dirPath, item);
         const newPath = path.join(dirPath, replacedString);
 
         if (oldPath !== newPath) {
@@ -51,7 +54,7 @@ export default class FindAndReplacer {
         if (stats.isDirectory()) {
             return this.renameDirectoriesAndFiles(newPath);
         } else if (stats.isFile()) {
-            return this.renameFileContents(newPath);
+            return this.renameFileContents(newPath);1
         } else {
             return Promise.resolve();
         }
@@ -68,7 +71,7 @@ export default class FindAndReplacer {
 
     renameFileWithDefinition(filePath, keyDefinition) {
         const fileContents = fs.readFileSync(filePath, { encoding: 'utf8' });
-        const replacedFileContents = FindAndReplacer.smartReplace(fileContents, keyDefinition.key, keyDefinition.replacement);
+        const replacedFileContents = FindAndReplacer.smartReplace(this.namespace, fileContents, keyDefinition.key, keyDefinition.replacement);
 
         if (fileContents !== replacedFileContents) {
             fs.writeFileSync(filePath, replacedFileContents);
@@ -77,7 +80,7 @@ export default class FindAndReplacer {
         return Promise.resolve();
     }
 
-    static smartReplace(string, key, replacement) {
+    static smartReplace(namespace, string, key, replacement) {
         const TRANSFORMATIONS = [
             'AS_DOMAIN',
             'WITHOUT_SPACES',
@@ -85,41 +88,42 @@ export default class FindAndReplacer {
             'UPPER_CASE',
         ];
 
+        const namespacedKey = '_' + _.compact([namespace, key]).join('_');
 
         if (_.includes(string, 'AS_DOMAIN')) {
             let transformedReplacement = _.chain(replacement).camelCase().toLower().value();
-            return _.replace(string, `_OLLIE_${key}_AS_DOMAIN_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_AS_DOMAIN_`, transformedReplacement);
 
         } else if (_.includes(string, 'WITHOUT_SPACES')) {
             let transformedReplacement = replacement.split(' ').join('');
-            return _.replace(string, `_OLLIE_${key}_WITHOUT_SPACES_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_WITHOUT_SPACES_`, transformedReplacement);
 
         } else if (_.includes(string, 'LOWER_CASE')) {
             let transformedReplacement = _.lowerCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_LOWER_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_LOWER_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'UPPER_CASE')) {
             let transformedReplacement = _.upperCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_UPPER_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_UPPER_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'SNAKE_CASE')) {
             let transformedReplacement = _.snakeCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_SNAKE_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_SNAKE_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'CAMEL_CASE')) {
             let transformedReplacement = _.camelCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_CAMEL_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_CAMEL_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'KEBAB_CASE')) {
             let transformedReplacement = _.kebabCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_KEBAB_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_KEBAB_CASE_`, transformedReplacement);
 
         } else if (_.includes(string, 'START_CASE')) {
             let transformedReplacement = _.startCase(replacement);
-            return _.replace(string, `_OLLIE_${key}_START_CASE_`, transformedReplacement);
+            return _.replace(string, `${namespacedKey}_START_CASE_`, transformedReplacement);
 
         } else {
-            return _.replace(string, `_OLLIE_${key}_`, replacement);
+            return _.replace(string, `${namespacedKey}_`, replacement);
         }
     }
 }
