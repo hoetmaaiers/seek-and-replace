@@ -1,9 +1,10 @@
 {
   "name": "seek-and-replace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "author": "Robin Houdmeyers - @hoetmaaiers",
   "license": "MIT",
+  "keywords": ['find', 'search', 'replace', 'recursively', 'smart']
   "scripts": {
     "test": "mocha ./test",
     "test:watch": "mocha --watch ./test"
