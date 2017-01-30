@@ -37,6 +37,7 @@ describe('SeekAndReplace', function () {
             'Lorem ipsum dolor sit amet _OLLIE_AUTHOR_KEBAB_CASE_',
             'blabla, blieblie, _OLLIE_NAME_ boemboem',
             'amet sit _OLLIE_NAME_UPPER_CASE_ ipsum lorem',
+            '_OLLIE_AUTHOR_UPPER_CASE_ the cowboy, _OLLIE_NAME_',
         ] ;
         fs.writeFileSync(FILES[0], DUMMY_FILE_CONTENT.join('\n'));
     });
@@ -74,6 +75,15 @@ describe('SeekAndReplace', function () {
             fileContentsArray[1].should.equal('blabla, blieblie, naampie boemboem');
             fileContentsArray[2].should.equal('amet sit NAAMPIE ipsum lorem');
         });
+
+        it('should recursively replace multiple variable parts in a string', function () {
+            const replacer = new SeekAndReplace('OLLIE', '.tmp', keyDefinitions);
+            replacer.replace();
+
+            const fileContents = fs.readFileSync('.tmp/test/foo.txt', { encoding: 'utf8'});
+            const fileContentsArray = fileContents.split('\n');
+            fileContentsArray[3].should.equal('JIMMY JOE the cowboy, naampie');
+        })
     });
 
     describe('#smartReplace', function () {
@@ -122,7 +132,7 @@ describe('SeekAndReplace', function () {
             result.should.equal('Point Of Sale');
         });
 
-    })
+    });
 
     afterEach(function () {
         // clean up dummy directories & files
