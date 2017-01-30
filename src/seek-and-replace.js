@@ -90,38 +90,38 @@ class SeekdAndReplace {
 
         if (_.includes(string, 'AS_DOMAIN')) {
             let transformedReplacement = _.chain(replacement).camelCase().toLower().value();
-            return _.replace(string, `${namespacedKey}_AS_DOMAIN_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_AS_DOMAIN_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'WITHOUT_SPACES')) {
             let transformedReplacement = replacement.split(' ').join('');
-            return _.replace(string, `${namespacedKey}_WITHOUT_SPACES_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_WITHOUT_SPACES_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'LOWER_CASE')) {
             let transformedReplacement = _.lowerCase(replacement);
-            return _.replace(string, `${namespacedKey}_LOWER_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_LOWER_CASE_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'UPPER_CASE')) {
             let transformedReplacement = _.upperCase(replacement);
-            return _.replace(string, `${namespacedKey}_UPPER_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_UPPER_CASE_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'SNAKE_CASE')) {
             let transformedReplacement = _.snakeCase(replacement);
-            return _.replace(string, `${namespacedKey}_SNAKE_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_SNAKE_CASE_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'CAMEL_CASE')) {
             let transformedReplacement = _.camelCase(replacement);
-            return _.replace(string, `${namespacedKey}_CAMEL_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_CAMEL_CASE_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'KEBAB_CASE')) {
             let transformedReplacement = _.kebabCase(replacement);
-            return _.replace(string, `${namespacedKey}_KEBAB_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_KEBAB_CASE_`, 'g'), transformedReplacement);
 
         } else if (_.includes(string, 'START_CASE')) {
             let transformedReplacement = _.startCase(replacement);
-            return _.replace(string, `${namespacedKey}_START_CASE_`, transformedReplacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_START_CASE_`, 'g'), transformedReplacement);
 
         } else {
-            return _.replace(string, `${namespacedKey}_`, replacement);
+            return _.replace(string, new RegExp(`${namespacedKey}_`, 'g'), replacement);
         }
     }
 }
