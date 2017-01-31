@@ -2,7 +2,7 @@
 
 Find and replace string occurrences in directories, files and fileContent.
 
-[![Build Status](https://travis-ci.org/hoetmaaiers/find-and-replace.svg?branch=master)](https://travis-ci.org/hoetmaaiers/find-and-replace)
+[![Build Status](https://travis-ci.org/hoetmaaiers/seek-and-replace.svg?branch=master)](https://travis-ci.org/hoetmaaiers/seek-and-replace)
 
 # Usage
 
