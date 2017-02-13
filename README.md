@@ -26,7 +26,11 @@ const keyDefinitions = [
     },
 ];
 
-const replacer = new SeekAndReplace(namespace, replacePath, keyDefinitions);
+const options = {
+    ignorePaths: ['node_modules', '.idea', '.env*']
+}
+
+const replacer = new SeekAndReplace(namespace, replacePath, keyDefinitions, options);
 ```
 
 
