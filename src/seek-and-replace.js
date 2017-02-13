@@ -1,12 +1,19 @@
-const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
+const _ = require('lodash');
+const micromatch = require('micromatch');
 
 class SeekdAndReplace {
-    constructor(namespace = '', replacePath, keyDefinitions) {
+    constructor(namespace = '', replacePath, keyDefinitions, options) {
         this.namespace = namespace;
         this.path = replacePath;
         this.keyDefinitions = keyDefinitions;
+
+        // set options
+        const DEFAULT_OPTIONS = {
+            ignorePaths: {},
+        };
+        this.options = Object.assign({}, DEFAULT_OPTIONS, options)
     }
 
     replace() {
@@ -39,12 +46,14 @@ class SeekdAndReplace {
         const replacedString = SeekdAndReplace.smartReplace(this.namespace, item, keyDefinition.key, keyDefinition.replacement);
         const oldPath = path.join(dirPath, item);
         const newPath = path.join(dirPath, replacedString);
+        const shouldBeRenamed = !pathShouldBeIgnored(oldPath, this.options.ignorePaths);
 
-        if (oldPath !== newPath) {
+        let stats = fs.statSync(oldPath);
+        if (oldPath !== newPath && shouldBeRenamed) {
             fs.renameSync(oldPath, newPath);
+            stats = fs.statSync(newPath);
         }
 
-        const stats = fs.statSync(newPath);
         if (stats.isDirectory()) {
             return this.renameDirectoriesAndFiles(newPath);
         } else if (stats.isFile()) {
@@ -58,7 +67,7 @@ class SeekdAndReplace {
     renameFileContents(filePath) {
         return new Promise((resolve, reject) => {
             const promList = this.keyDefinitions.map((keyDefinition) => {
-                this.renameFileWithDefinition(filePath, keyDefinition);
+                this.renameFileContentWithDefinition(filePath, keyDefinition);
             });
 
             Promise.all(promList)
@@ -67,7 +76,7 @@ class SeekdAndReplace {
         });
     }
 
-    renameFileWithDefinition(filePath, keyDefinition) {
+    renameFileContentWithDefinition(filePath, keyDefinition) {
         const fileContents = fs.readFileSync(filePath, { encoding: 'utf8' });
         const replacedFileContents = SeekdAndReplace.smartReplace(this.namespace, fileContents, keyDefinition.key, keyDefinition.replacement);
 
@@ -79,13 +88,6 @@ class SeekdAndReplace {
     }
 
     static smartReplace(namespace, string, key, replacement) {
-        const TRANSFORMATIONS = [
-            'AS_DOMAIN',
-            'WITHOUT_SPACES',
-            'LOWER_CASE',
-            'UPPER_CASE',
-        ];
-
         const namespacedKey = '_' + _.compact([namespace, key]).join('_');
 
         if (_.includes(string, 'AS_DOMAIN')) {
@@ -124,6 +126,12 @@ class SeekdAndReplace {
             return _.replace(string, new RegExp(`${namespacedKey}_`, 'g'), replacement);
         }
     }
+}
+
+function pathShouldBeIgnored(dirPath, ignorePaths) {
+    return _.some(ignorePaths, function (ignorePath) {
+        return micromatch.contains(dirPath, ignorePath, { dot: true });
+    });
 }
 
 module.exports = SeekdAndReplace

@@ -22,12 +22,14 @@ describe('SeekAndReplace', function () {
             '.tmp/test',
             '.tmp/test_OLLIE_NAME_',
             '.tmp/test_OLLIE_NAME_/test_2_OLLIE_AUTHOR_',
+            '.tmp/.ignore',
         ];
 
         const FILES = [
             '.tmp/test/foo.txt',
             '.tmp/test_OLLIE_NAME_/foo.txt',
             '.tmp/test_OLLIE_NAME_/foo_OLLIE_YEAR_bar.txt',
+            '.tmp/.ignore/foo_OLLIE_NAME_bar.txt',
         ];
 
         DIRECTORIES.forEach((directory) => execSync(`mkdir ${directory}`));
@@ -52,8 +54,7 @@ describe('SeekAndReplace', function () {
             replacer.replace();
 
             const dirContents = fs.readdirSync('.tmp');
-
-            dirContents[1].should.equal('testnaampie');
+            dirContents[2].should.equal('testnaampie');
         });
 
         it('should replace a variable nested directory variable part', function () {
@@ -83,7 +84,17 @@ describe('SeekAndReplace', function () {
             const fileContents = fs.readFileSync('.tmp/test/foo.txt', { encoding: 'utf8'});
             const fileContentsArray = fileContents.split('\n');
             fileContentsArray[3].should.equal('JIMMY JOE the cowboy, naampie');
-        })
+        });
+
+        it('should ignore a dir path in options.ignore', function () {
+            const replacer = new SeekAndReplace('OLLIE', '.tmp', keyDefinitions, {
+                ignorePaths: ['.tmp/.ignore/*.txt']
+            });
+            replacer.replace();
+
+            const dirContents = fs.readdirSync('.tmp/.ignore');
+            dirContents[0].should.equal('foo_OLLIE_NAME_bar.txt');
+        });
     });
 
     describe('#smartReplace', function () {
